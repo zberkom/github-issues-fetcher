@@ -1,4 +1,4 @@
-defmodule GithubIssues do
+defmodule Issues.GithubIssues do
   @github_url Application.get_env(:issues, :github_url)
   @user_agent [ {"User-agent", "Elixir dave@pragprog.com"} ]
 
@@ -12,10 +12,11 @@ defmodule GithubIssues do
     "#{@github_url}/repos/#{user}/#{project}/issues"
   end
 
-  def handle_response(%{status_code: 200, body: body}) do
+  def handle_response({:ok, %HTTPoison.Response{body: body}}) do
     { :ok, :jsx.decode(body) }
   end
-  def handle_response(%{status_code: ___, body: body}) do
+
+  def handle_response({:error, %HTTPoison.Response{body: body}}) do
     { :error, :jsx.decode(body) }
   end
 end
